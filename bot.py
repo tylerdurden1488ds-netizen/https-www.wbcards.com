@@ -6,9 +6,14 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import BOT_TOKEN
-from handlers.start import router as start_router
 
-logging.basicConfig(level=logging.INFO)
+from handlers.start import router as start_router
+from handlers.generate import router as generate_router
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
 
 bot = Bot(
     token=BOT_TOKEN,
@@ -20,6 +25,7 @@ bot = Bot(
 dp = Dispatcher()
 
 dp.include_router(start_router)
+dp.include_router(generate_router)
 
 
 async def main():
