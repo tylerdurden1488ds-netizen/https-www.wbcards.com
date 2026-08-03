@@ -147,14 +147,27 @@ async def get_discount(message: Message, state: FSMContext):
 
     data = await state.get_data()
 
-    await message.answer(
-        "⏳ Создаю карточку..."
-    )
+    from services.ai_service import AIService
 
-    # На следующем этапе здесь будет вызов Gemini + Nano Banana
+ai = AIService()
 
-    await message.answer(
-        f"""
+await message.answer("🤖 Генерирую профессиональный промпт...")
+
+prompt = await ai.create_prompt(
+    product=data["product"],
+    background=data["background"],
+    style=data["style"],
+    text=data["text"],
+    price=data["price"],
+    old_price=data["old_price"],
+    discount=message.text,
+)
+
+result = await ai.generate(prompt)
+
+await message.answer(result)
+
+await state.clear()
 ✅ Все данные получены.
 
 📦 Товар:
