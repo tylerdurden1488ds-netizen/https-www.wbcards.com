@@ -4,12 +4,6 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.filters import Command
-from aiogram.types import (
-    Message,
-    ReplyKeyboardMarkup,
-    KeyboardButton,
-)
 
 from config import BOT_TOKEN
 
@@ -17,24 +11,22 @@ logging.basicConfig(level=logging.INFO)
 
 bot = Bot(
     token=BOT_TOKEN,
-    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+    default=DefaultBotProperties(
+        parse_mode=ParseMode.HTML
+    )
 )
 
 dp = Dispatcher()
 
 
-menu = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="🎨 Создать карточку")],
-        [KeyboardButton(text="✏️ Исправить карточку")],
-        [KeyboardButton(text="📂 История")],
-        [KeyboardButton(text="⭐ Шаблоны")],
-        [KeyboardButton(text="⚙️ Настройки")]
-    ],
-    resize_keyboard=True
-)
+async def main():
+    print("WB AI Studio запущен")
+
+    await dp.start_polling(bot)
 
 
+if __name__ == "__main__":
+    asyncio.run(main())
 @dp.message(Command("start"))
 async def start(message: Message):
     await message.answer(
