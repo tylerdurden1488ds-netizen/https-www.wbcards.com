@@ -1,5 +1,4 @@
 import os
-
 from google import genai
 
 client = genai.Client(
@@ -8,13 +7,13 @@ client = genai.Client(
 
 
 def generate_text(prompt: str) -> str:
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-    )
-
-    if hasattr(response, "text") and response.text:
         return response.text
 
-    return "Ошибка генерации."
+    except Exception as e:
+        return f"Ошибка Gemini:\n{e}"
