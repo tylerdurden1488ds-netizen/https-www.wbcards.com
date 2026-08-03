@@ -8,13 +8,13 @@ client = genai.Client(
 
 
 def generate_text(prompt: str) -> str:
-    """
-    Генерация текста через Gemini.
-    """
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
     )
 
-    return response.text
+    if hasattr(response, "text") and response.text:
+        return response.text
+
+    return "Ошибка генерации."
