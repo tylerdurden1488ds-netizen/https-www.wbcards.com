@@ -1,3 +1,4 @@
+from services.prompt_builder import build_prompt
 from services.gemini import generate_text
 
 
@@ -13,48 +14,21 @@ class AIService:
         old_price,
         discount,
     ):
-        prompt = f"""
-Ты профессиональный дизайнер карточек Wildberries.
 
-Создай максимально подробный промпт для генерации изображения.
-
-Товар:
-{product}
-
-Фон:
-{background}
-
-Стиль:
-{style}
-
-Текст:
-{text}
-
-Цена:
-{price}
-
-Старая цена:
-{old_price}
-
-Скидка:
-{discount}
-
-Карточка должна выглядеть как топовая карточка Wildberries 2026.
-
-Используй дорогой стиль.
-
-Максимальный реализм.
-
-Читаемый текст.
-
-Премиальная композиция.
-
-8K.
-
-Высокая детализация.
-"""
+        prompt = build_prompt(
+            product=product,
+            background=background,
+            style=style,
+            text=text,
+            price=price,
+            old_price=old_price,
+            discount=discount,
+        )
 
         return prompt
 
     async def generate(self, prompt):
-        return generate_text(prompt)
+
+        result = generate_text(prompt)
+
+        return result
