@@ -1,1 +1,77 @@
+from aiogram import Router
+from aiogram.types import Message
+from aiogram.fsm.context import FSMContext
 
+from states import CreateCard
+
+router = Router()
+
+
+@router.message(lambda message: message.text == "🎨 Создать карточку")
+async def create_card(message: Message, state: FSMContext):
+    await state.set_state(CreateCard.waiting_photo)
+
+    await message.answer(
+        "📷 Отправьте фотографию товара.\n\n"
+        "Можно также отправить несколько фотографий."
+    )
+
+
+@router.message(CreateCard.waiting_photo)
+async def get_photo(message: Message, state: FSMContext):
+
+    if not message.photo:
+        await message.answer(
+            "❌ Отправьте именно фотографию."
+        )
+        return
+
+    await state.update_data(
+        photo=message.photo[-1].file_id
+    )
+
+    await state.set_state(CreateCard.waiting_description)
+
+    await message.answer(
+        "📝 Теперь напишите название товара.\n\n"
+        "Например:\n"
+        "Кроссовки мужские"
+    )
+
+
+@router.message(CreateCard.waiting_description)
+async def get_description(message: Message, state: FSMContext):
+
+    await state.update_data(
+        product=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_background)
+
+    await message.answer(
+        "🎨 Какой фон нужен?\n\n"
+        "Например:\n"
+        "Белый\n"
+        "Горы\n"
+        "Студия\n"
+        "Мрамор"
+    )
+
+
+@router.message(CreateCard.waiting_background)
+async def get_background(message: Message, state: FSMContext):
+
+    await state.update_data(
+        background=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_style)
+
+    await message.answer(
+        "✨ Напишите стиль.\n\n"
+        "Например:\n"
+        "Apple\n"
+        "Premium\n"
+        "Luxury\n"
+        "Минимализм"
+      )
