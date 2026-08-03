@@ -75,3 +75,111 @@ async def get_background(message: Message, state: FSMContext):
         "Luxury\n"
         "Минимализм"
       )
+    @router.message(CreateCard.waiting_style)
+async def get_style(message: Message, state: FSMContext):
+
+    await state.update_data(
+        style=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_text)
+
+    await message.answer(
+        "📝 Какой текст добавить на карточку?\n\n"
+        "Например:\n"
+        "НОВИНКА\n"
+        "ПРЕМИУМ\n"
+        "100% ХЛОПОК"
+    )
+
+
+@router.message(CreateCard.waiting_text)
+async def get_text(message: Message, state: FSMContext):
+
+    await state.update_data(
+        text=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_price)
+
+    await message.answer(
+        "💰 Введите цену.\n\n"
+        "Например:\n1999 ₽"
+    )
+
+
+@router.message(CreateCard.waiting_price)
+async def get_price(message: Message, state: FSMContext):
+
+    await state.update_data(
+        price=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_old_price)
+
+    await message.answer(
+        "💸 Введите старую цену.\n\n"
+        "Например:\n2999 ₽"
+    )
+
+
+@router.message(CreateCard.waiting_old_price)
+async def get_old_price(message: Message, state: FSMContext):
+
+    await state.update_data(
+        old_price=message.text
+    )
+
+    await state.set_state(CreateCard.waiting_discount)
+
+    await message.answer(
+        "🏷 Введите скидку.\n\n"
+        "Например:\n-33%"
+    )
+
+
+@router.message(CreateCard.waiting_discount)
+async def get_discount(message: Message, state: FSMContext):
+
+    await state.update_data(
+        discount=message.text
+    )
+
+    data = await state.get_data()
+
+    await message.answer(
+        "⏳ Создаю карточку..."
+    )
+
+    # На следующем этапе здесь будет вызов Gemini + Nano Banana
+
+    await message.answer(
+        f"""
+✅ Все данные получены.
+
+📦 Товар:
+{data['product']}
+
+🎨 Фон:
+{data['background']}
+
+✨ Стиль:
+{data['style']}
+
+📝 Текст:
+{data['text']}
+
+💰 Цена:
+{data['price']}
+
+💸 Старая цена:
+{data['old_price']}
+
+🏷 Скидка:
+{message.text}
+
+Следующим этапом будет генерация через Gemini.
+"""
+    )
+
+    await state.clear()
